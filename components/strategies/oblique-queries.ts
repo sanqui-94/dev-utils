@@ -82,21 +82,48 @@ export function useLikeStrategy() {
       const supabase = createClient();
 
       const { data, error } = await supabase
-        .rpc("increment_like_count", { strategy_id: strategyId })
+        .rpc("increment_like_count", { p_strategy_id: strategyId })
         .single();
 
       if (error) {
         throw new Error(error.message);
       }
 
-      if (!data) {
+      const typedData = data as ObliqueStrategy | null;
+
+      if (!typedData) {
         throw new Error("Failed to update like count");
       }
 
-      return data;
+      return typedData;
+    },
+    onMutate: async ({ strategyId }) => {
+      await queryClient.cancelQueries({ queryKey: obliqueQueryKeys.random() });
+
+      const previousStrategy = queryClient.getQueryData<ObliqueStrategy>(
+        obliqueQueryKeys.random()
+      );
+
+      if (previousStrategy?.strategy_id === strategyId) {
+        queryClient.setQueryData<ObliqueStrategy>(obliqueQueryKeys.random(), {
+          ...previousStrategy,
+          like_count: (previousStrategy.like_count ?? 0) + 1,
+          updated_at: new Date().toISOString(),
+        });
+      }
+
+      return { previousStrategy };
+    },
+    onError: (_error, _variables, context) => {
+      if (context?.previousStrategy) {
+        queryClient.setQueryData(obliqueQueryKeys.random(), context.previousStrategy);
+      }
     },
     onSuccess: (data) => {
       queryClient.setQueryData(obliqueQueryKeys.random(), data);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: obliqueQueryKeys.random() });
     },
   });
 }
