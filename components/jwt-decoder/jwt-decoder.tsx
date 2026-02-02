@@ -35,7 +35,7 @@ export default function JwtDecoderComponent() {
       
       // Here you could save the decoded result to database if needed
     } catch (err) {
-      setError('Invalid JWT token');
+      setError('Invalid JWT token: ' + (err instanceof Error ? err.message : String(err)));
       setDecodedPayload(null);
     } finally {
       setIsLoading(false);

@@ -12,6 +12,15 @@ export default function StrategyCard() {
 
   const likeCount = strategy?.like_count ?? 0;
 
+  const formatUpdatedAt = (value?: string) => {
+    if (!value) return null;
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return null;
+    return date.toLocaleString();
+  };
+
+  const updatedLabel = formatUpdatedAt(strategy?.updated_at);
+
   const handleRefresh = async () => {
     try {
       await refreshMutation.mutateAsync();
@@ -87,6 +96,12 @@ export default function StrategyCard() {
           <blockquote className="text-orange-100 text-2xl md:text-3xl font-light leading-relaxed text-center max-w-md">
             {strategy?.content}
           </blockquote> 
+
+          {updatedLabel && (
+            <div className="text-orange-200/80 text-xs">
+              Updated {updatedLabel}
+            </div>
+          )}
         </div>
         
         {/* Refresh button */}
