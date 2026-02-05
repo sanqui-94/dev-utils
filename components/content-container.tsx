@@ -1,7 +1,7 @@
 import { NavItem } from "./app-nav-bar";
 import StrategyCard from "./strategies/card";
 import JwtDecoderComponent from "./jwt-decoder/jwt-decoder";
-import QrScannerComponent from "./qr-scanner/qr-scanner";
+import UUIDGenerator from "./uuid-generator/uuid-generator";
 
 interface ContentContainerProps {
   selectedItem: NavItem;
@@ -25,10 +25,10 @@ const contentComponents: Record<NavItem, ContentConfig> = {
     title: "JWT Token Decoder",
     description: "Decode and inspect JSON Web Tokens"
   },
-  'qr-scanner': {
-    component: QrScannerComponent,
-    title: "QR Code Scanner",
-    description: "Scan and manage QR codes"
+  'uuid-generator': {
+    component: UUIDGenerator,
+    title: "UUID Generator",
+    description: "Generate UUIDs"
   },
 };
 
