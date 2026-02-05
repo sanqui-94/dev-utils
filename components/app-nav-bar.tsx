@@ -1,41 +1,67 @@
+"use client";
+
 import {
   NavigationMenu,
   NavigationMenuItem,
+  NavigationMenuLink,
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from "./ui/navigation-menu";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
-export type NavItem = "strategies" | "jwt-decoder" | "qr-scanner";
+export type NavItem = "strategies" | "jwt-decoder" | "uuid-generator";
 
 interface AppNavBarProps {
-  selectedItem: NavItem;
-  onItemSelect: (item: NavItem) => void;
+  selectedItem?: NavItem;
 }
 
-export default function AppNavBar({
-  selectedItem,
-  onItemSelect,
-}: AppNavBarProps) {
+const pathToNavItem: Record<string, NavItem> = {
+  "/": "strategies",
+  "/strategies": "strategies",
+  "/jwt-decoder": "jwt-decoder",
+  "/uuid-generator": "uuid-generator",
+};
+
+export default function AppNavBar({ selectedItem }: AppNavBarProps) {
+  const pathname = usePathname();
+  const activeItem = pathToNavItem[pathname] ?? selectedItem ?? "strategies";
+
   return (
     <NavigationMenu className="mb-8 border-2">
       <NavigationMenuList>
-        <NavigationMenuItem
-          className={`${navigationMenuTriggerStyle()} ${selectedItem === "strategies" ? "bg-accent" : ""}`}
-          onClick={() => onItemSelect("strategies")}
-        >
-          Strategies
+        <NavigationMenuItem>
+          <NavigationMenuLink asChild>
+            <Link
+              className={`${navigationMenuTriggerStyle()} ${activeItem === "strategies" ? "bg-primary text-primary-foreground font-semibold" : ""}`}
+              href="/strategies"
+              aria-current={activeItem === "strategies" ? "page" : undefined}
+            >
+              Strategies
+            </Link>
+          </NavigationMenuLink>
         </NavigationMenuItem>
-        <NavigationMenuItem
-          className={`${navigationMenuTriggerStyle()} ${selectedItem === "jwt-decoder" ? "bg-accent" : ""}`}
-          onClick={() => onItemSelect("jwt-decoder")}
-        >
-          JWT Decoder
+        <NavigationMenuItem>
+          <NavigationMenuLink asChild>
+            <Link
+              className={`${navigationMenuTriggerStyle()} ${activeItem === "jwt-decoder" ? "bg-primary text-primary-foreground font-semibold" : ""}`}
+              href="/jwt-decoder"
+              aria-current={activeItem === "jwt-decoder" ? "page" : undefined}
+            >
+              JWT Codec
+            </Link>
+          </NavigationMenuLink>
         </NavigationMenuItem>
-        <NavigationMenuItem
-          className={`${navigationMenuTriggerStyle()} ${selectedItem === "qr-scanner" ? "bg-accent" : ""}`}
-          onClick={() => onItemSelect("qr-scanner")}
-        >
-          QR Scanner
+        <NavigationMenuItem>
+          <NavigationMenuLink asChild>
+            <Link
+              className={`${navigationMenuTriggerStyle()} ${activeItem === "uuid-generator" ? "bg-primary text-primary-foreground font-semibold" : ""}`}
+              href="/uuid-generator"
+              aria-current={activeItem === "uuid-generator" ? "page" : undefined}
+            >
+              UUID Generator
+            </Link>
+          </NavigationMenuLink>
         </NavigationMenuItem>
       </NavigationMenuList>
     </NavigationMenu>

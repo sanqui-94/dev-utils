@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
 import AppNavBar, { NavItem } from "./app-nav-bar";
 import ContentContainer from "./content-container";
 
-export default function MainPage() {
-  const [selectedItem, setSelectedItem] = useState<NavItem>("strategies");
+interface MainPageProps {
+  selectedItem: NavItem;
+}
+
+export default function MainPage({ selectedItem }: MainPageProps) {
 
   return (
     <main className="min-h-screen flex flex-col">
@@ -13,7 +15,7 @@ export default function MainPage() {
         Welcome to Dev Utils
       </h1>
       <div className="flex justify-center pt-8">
-        <AppNavBar selectedItem={selectedItem} onItemSelect={setSelectedItem} />
+        <AppNavBar selectedItem={selectedItem} />
       </div>
 
       <div className="flex-1 flex items-center justify-center px-4">
