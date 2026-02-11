@@ -2,6 +2,7 @@ import { NavItem } from "./app-nav-bar";
 import StrategyCard from "./strategies/card";
 import JwtDecoderComponent from "./jwt-decoder/jwt-decoder";
 import UUIDGenerator from "./uuid-generator/uuid-generator";
+import PrettifyJson from "./prettify-json/prettify-json";
 
 interface ContentContainerProps {
   selectedItem: NavItem;
@@ -29,6 +30,11 @@ const contentComponents: Record<NavItem, ContentConfig> = {
     component: UUIDGenerator,
     title: "UUID Generator",
     description: "Generate UUIDs"
+  },
+  'json-prettifier': {
+    component: PrettifyJson,
+    title: "JSON Prettifier",
+    description: "Format JSON for readability"
   },
 };
 

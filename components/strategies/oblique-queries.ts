@@ -13,11 +13,14 @@ interface ObliqueStrategy {
 export const obliqueQueryKeys = {
   all: ['oblique-strategies'] as const,
   random: () => [...obliqueQueryKeys.all, 'random'] as const,
+  byId: (strategyId: number) => [...obliqueQueryKeys.all, 'by-id', strategyId] as const,
 };
 
 // Get random oblique strategy from Supabase
 export function useRandomObliqueStrategy() {
-  return useQuery({
+  const queryClient = useQueryClient();
+
+  const randomQuery = useQuery({
     queryKey: obliqueQueryKeys.random(),
     queryFn: async (): Promise<ObliqueStrategy> => {
       const supabase = createClient();
@@ -54,7 +57,23 @@ export function useRandomObliqueStrategy() {
     staleTime: 0, // Always fetch fresh for randomness
     gcTime: 1000 * 60 * 5, // 5 minutes
     refetchOnWindowFocus: false, // Don't refetch on focus to avoid constant changes
+    onSuccess: (data) => {
+      queryClient.setQueryData(obliqueQueryKeys.byId(data.strategy_id), data);
+    },
   });
+
+  const strategyId = randomQuery.data?.strategy_id;
+  const strategyQuery = useQuery({
+    queryKey: strategyId ? obliqueQueryKeys.byId(strategyId) : obliqueQueryKeys.random(),
+    queryFn: async () => randomQuery.data as ObliqueStrategy,
+    enabled: false,
+    initialData: randomQuery.data,
+  });
+
+  return {
+    ...randomQuery,
+    data: strategyQuery.data,
+  };
 }
 
 // Manually refetch a new random strategy
@@ -98,32 +117,33 @@ export function useLikeStrategy() {
       return typedData;
     },
     onMutate: async ({ strategyId }) => {
-      await queryClient.cancelQueries({ queryKey: obliqueQueryKeys.random() });
+      await queryClient.cancelQueries({ queryKey: obliqueQueryKeys.byId(strategyId) });
 
       const previousStrategy = queryClient.getQueryData<ObliqueStrategy>(
-        obliqueQueryKeys.random()
+        obliqueQueryKeys.byId(strategyId)
       );
 
-      if (previousStrategy?.strategy_id === strategyId) {
-        queryClient.setQueryData<ObliqueStrategy>(obliqueQueryKeys.random(), {
+      if (previousStrategy) {
+        queryClient.setQueryData<ObliqueStrategy>(obliqueQueryKeys.byId(strategyId), {
           ...previousStrategy,
           like_count: (previousStrategy.like_count ?? 0) + 1,
           updated_at: new Date().toISOString(),
         });
       }
 
-      return { previousStrategy };
+      return { previousStrategy, strategyId };
     },
     onError: (_error, _variables, context) => {
       if (context?.previousStrategy) {
-        queryClient.setQueryData(obliqueQueryKeys.random(), context.previousStrategy);
+        queryClient.setQueryData(
+          obliqueQueryKeys.byId(context.strategyId),
+          context.previousStrategy
+        );
       }
     },
     onSuccess: (data) => {
-      queryClient.setQueryData(obliqueQueryKeys.random(), data);
+      queryClient.setQueryData(obliqueQueryKeys.byId(data.strategy_id), data);
     },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: obliqueQueryKeys.random() });
-    },
+    // No forced refetch on settle; we update the cache onSuccess already.
   });
 }

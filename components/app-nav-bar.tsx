@@ -10,7 +10,7 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-export type NavItem = "strategies" | "jwt-decoder" | "uuid-generator";
+export type NavItem = "strategies" | "jwt-decoder" | "uuid-generator" | "json-prettifier";
 
 interface AppNavBarProps {
   selectedItem?: NavItem;
@@ -21,6 +21,7 @@ const pathToNavItem: Record<string, NavItem> = {
   "/strategies": "strategies",
   "/jwt-decoder": "jwt-decoder",
   "/uuid-generator": "uuid-generator",
+  "/json-prettifier": "json-prettifier",
 };
 
 export default function AppNavBar({ selectedItem }: AppNavBarProps) {
@@ -60,6 +61,17 @@ export default function AppNavBar({ selectedItem }: AppNavBarProps) {
               aria-current={activeItem === "uuid-generator" ? "page" : undefined}
             >
               UUID Generator
+            </Link>
+          </NavigationMenuLink>
+        </NavigationMenuItem>
+        <NavigationMenuItem>
+          <NavigationMenuLink asChild>
+            <Link
+              className={`${navigationMenuTriggerStyle()} ${activeItem === "json-prettifier" ? "bg-primary text-primary-foreground font-semibold" : ""}`}
+              href="/json-prettifier"
+              aria-current={activeItem === "json-prettifier" ? "page" : undefined}
+            >
+              JSON Prettifier
             </Link>
           </NavigationMenuLink>
         </NavigationMenuItem>
