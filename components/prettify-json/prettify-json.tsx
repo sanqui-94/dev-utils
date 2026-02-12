@@ -7,7 +7,7 @@ import { Label } from "../ui/label";
 import { Textarea } from "../ui/textarea";
 
 const errorMessage =
-  "there was an unexpected error with the conversion, please try again later.";
+   "Invalid JSON. Please check that your input is valid JSON.";
 
 type CopyStatus = "idle" | "copied" | "failed";
 

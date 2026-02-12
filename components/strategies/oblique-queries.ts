@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { createClient } from '@/lib/supabase/client';
 
@@ -57,10 +58,18 @@ export function useRandomObliqueStrategy() {
     staleTime: 0, // Always fetch fresh for randomness
     gcTime: 1000 * 60 * 5, // 5 minutes
     refetchOnWindowFocus: false, // Don't refetch on focus to avoid constant changes
-    onSuccess: (data) => {
-      queryClient.setQueryData(obliqueQueryKeys.byId(data.strategy_id), data);
-    },
   });
+
+  useEffect(() => {
+    if (!randomQuery.data) {
+      return;
+    }
+
+    queryClient.setQueryData(
+      obliqueQueryKeys.byId(randomQuery.data.strategy_id),
+      randomQuery.data
+    );
+  }, [queryClient, randomQuery.data]);
 
   const strategyId = randomQuery.data?.strategy_id;
   const strategyQuery = useQuery({
