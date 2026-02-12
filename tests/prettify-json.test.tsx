@@ -62,7 +62,7 @@ describe("JSON prettifier", () => {
 
     expect(
       screen.getByText(
-        /there was an unexpected error with the conversion, please try again later\./i
+        /invalid json\. please check that your input is valid json\./i
       )
     ).toBeInTheDocument();
   });
