@@ -81,6 +81,9 @@ describe("oblique-queries hooks", () => {
     });
 
     expect(result.current.data).toEqual(strategy);
+    expect(
+      queryClient.getQueryData(obliqueQueryKeys.byId(strategy.strategy_id))
+    ).toEqual(strategy);
     expect(from).toHaveBeenCalledWith("oblique_strategies");
     expect(select).toHaveBeenCalledWith("*", { count: "exact", head: true });
     expect(range).toHaveBeenCalledWith(0, 0);
@@ -106,7 +109,7 @@ describe("oblique-queries hooks", () => {
     const queryClient = new QueryClient({
       defaultOptions: { queries: { retry: false } },
     });
-    queryClient.setQueryData(obliqueQueryKeys.random(), initial);
+    queryClient.setQueryData(obliqueQueryKeys.byId(initial.strategy_id), initial);
 
     const { result } = renderHook(() => useLikeStrategy(), {
       wrapper: createWrapper(queryClient),
@@ -118,7 +121,9 @@ describe("oblique-queries hooks", () => {
       p_strategy_id: initial.strategy_id,
     });
 
-    const cached = queryClient.getQueryData<Strategy>(obliqueQueryKeys.random());
+    const cached = queryClient.getQueryData<Strategy>(
+      obliqueQueryKeys.byId(initial.strategy_id)
+    );
     expect(cached).toEqual(updated);
   });
 });
