@@ -73,9 +73,9 @@ export function useRandomObliqueStrategy() {
 
   const strategyId = randomQuery.data?.strategy_id;
   const strategyQuery = useQuery({
-    queryKey: strategyId ? obliqueQueryKeys.byId(strategyId) : obliqueQueryKeys.random(),
+    queryKey: strategyId !== undefined ? obliqueQueryKeys.byId(strategyId) : ['oblique-strategies', 'pending'],
     queryFn: async () => randomQuery.data as ObliqueStrategy,
-    enabled: false,
+    enabled: strategyId !== undefined,
     initialData: randomQuery.data,
   });
 
